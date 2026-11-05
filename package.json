@@ -1,0 +1,56 @@
+{
+  "name": "envo-backend",
+  "version": "0.0.0",
+  "private": true,
+  "description": "Backend de la néobanque Envo (MeSomb) : monolithe modulaire Hono, MVC.",
+  "type": "module",
+  "engines": {
+    "node": ">=22.12"
+  },
+  "packageManager": "pnpm@10.0.0",
+  "scripts": {
+    "dev": "tsx watch --env-file=.env bin/server.ts",
+    "build": "tsc -p tsconfig.build.json",
+    "start": "node dist/bin/server.js",
+    "typecheck": "tsc --noEmit",
+    "lint": "eslint .",
+    "format": "prettier --write .",
+    "format:check": "prettier --check .",
+    "test": "vitest run",
+    "test:watch": "vitest",
+    "test:coverage": "vitest run --coverage",
+    "arch": "depcruise app config start bin app.rc.ts --config .dependency-cruiser.cjs",
+    "prisma:generate": "prisma generate --schema prisma/schema",
+    "audit:deps": "pnpm audit --audit-level=high"
+  },
+  "dependencies": {
+    "@hono/node-server": "^1.14.0",
+    "@prisma/client": "^6.7.0",
+    "hono": "^4.7.0",
+    "ioredis": "^5.4.0",
+    "pino": "^9.0.0",
+    "zod": "^4.0.0"
+  },
+  "devDependencies": {
+    "@eslint/js": "^9.0.0",
+    "@types/node": "^22.0.0",
+    "@vitest/coverage-v8": "^3.0.0",
+    "dependency-cruiser": "^16.0.0",
+    "eslint": "^9.0.0",
+    "globals": "^16.0.0",
+    "prettier": "^3.0.0",
+    "prisma": "^6.7.0",
+    "tsx": "^4.0.0",
+    "typescript": "^5.7.0",
+    "typescript-eslint": "^8.0.0",
+    "vitest": "^3.0.0"
+  },
+  "pnpm": {
+    "onlyBuiltDependencies": [
+      "@prisma/client",
+      "@prisma/engines",
+      "esbuild",
+      "prisma"
+    ]
+  }
+}

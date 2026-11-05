@@ -1,0 +1,12 @@
+// Fichier de base du schéma multi-fichiers : generator + datasource uniquement.
+// Un fichier par module ensuite (system.prisma, auth.prisma, ledger.prisma…).
+// TODO(verify) : Prisma 7 déplace l'URL de connexion hors du schéma (prisma.config.ts).
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}

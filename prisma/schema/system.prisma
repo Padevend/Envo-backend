@@ -1,0 +1,12 @@
+// Module `system` : interrupteurs d'urgence (kill switches).
+// Clés prévues : EXTERNAL_PAYOUTS_ENABLED, SIGNUPS_ENABLED, RULES_ENGINE_ENABLED.
+
+model SystemFlag {
+  key       String   @id
+  enabled   Boolean
+  reason    String?
+  updatedBy String?  @map("updated_by") @db.Uuid // AdminUser.id
+  updatedAt DateTime @updatedAt @map("updated_at")
+
+  @@map("system_flags")
+}
