@@ -1,6 +1,6 @@
 # Questions ouvertes et décisions à confirmer
 
-LÃ©gende : **À CONFIRMER** = défaut pris en Phase 0 faute de réponse explicite ; **TODO(verify)** = comportement externe non confirmé, ne pas le considérer comme acquis.
+Légende : **À CONFIRMER** = défaut pris en Phase 0 faute de réponse explicite ; **TODO(verify)** = comportement externe non confirmé, ne pas le considérer comme acquis.
 
 ## Décisions prises par défaut en Phase 0
 
