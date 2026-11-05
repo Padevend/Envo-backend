@@ -1,0 +1,9 @@
+# Développement local : expose Postgres et Redis sur la boucle locale uniquement.
+#   docker compose --env-file .env -f docker/compose.yml -f docker/compose.dev.yml up -d postgres redis
+services:
+  postgres:
+    ports:
+      - '127.0.0.1:5432:5432'
+  redis:
+    ports:
+      - '127.0.0.1:6379:6379'
