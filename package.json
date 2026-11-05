@@ -51,6 +51,10 @@
       "@prisma/engines",
       "esbuild",
       "prisma"
-    ]
+    ],
+    "overrides": {
+      "tinypool": "^2.1.2",
+      "deepmerge-ts": "^8.0.0"
+    }
   }
 }
