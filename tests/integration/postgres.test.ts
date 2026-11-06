@@ -85,7 +85,7 @@ describe.skipIf(!INTEGRATION)('intégration PostgreSQL', () => {
       expect(await store().begin(later)).toEqual({ state: 'acquired' })
     })
 
-    it('n\'accorde le verrou qu\'à une seule requête parmi dix simultanées', async () => {
+    it('accorde le verrou à une seule requête parmi dix simultanées', async () => {
       const input = newInput()
       const results = await Promise.all(Array.from({ length: 10 }, () => store().begin(input)))
       expect(results.filter((result) => result.state === 'acquired')).toHaveLength(1)
@@ -196,7 +196,7 @@ describe.skipIf(!INTEGRATION)('intégration PostgreSQL', () => {
       expect(row?.nextAttemptAt.getTime()).toBeGreaterThan(Date.now() - 1_000)
     })
 
-    it('ne réserve un événement qu'une fois même avec des relais concurrents', async () => {
+    it('réserve un événement une seule fois, même avec des relais concurrents', async () => {
       const bus = new EventBus()
       let calls = 0
       bus.subscribe(TEST_EVENT, 'integration.concurrent', async () => {
@@ -204,7 +204,11 @@ describe.skipIf(!INTEGRATION)('intégration PostgreSQL', () => {
       })
       await uow().run((tx) => publisher().publish(tx, TEST_EVENT, { value: 'x' }))
 
-      const results = await Promise.all([relayFor(bus).runOnce(), relayFor(bus).runOnce(), relayFor(bus).runOnce()])
+      const results = await Promise.all([
+        relayFor(bus).runOnce(),
+        relayFor(bus).runOnce(),
+        relayFor(bus).runOnce(),
+      ])
       expect(results.reduce((total, result) => total + result.claimed, 0)).toBe(1)
       expect(calls).toBe(1)
     })

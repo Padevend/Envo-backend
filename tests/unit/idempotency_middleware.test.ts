@@ -1,11 +1,11 @@
 import { Hono } from 'hono'
+import type { Context } from 'hono'
 import { describe, expect, it } from 'vitest'
+import type { AppEnv } from '../../app/core/http/app_env.js'
+import { createLogger } from '../../app/core/logger/logger.js'
 import { createErrorHandler } from '../../app/core/middleware/error_handler.js'
 import { idempotencyMiddleware } from '../../app/core/middleware/idempotency.js'
 import { requestIdMiddleware } from '../../app/core/middleware/request_id.js'
-import { createLogger } from '../../app/core/logger/logger.js'
-import type { AppEnv } from '../../app/core/http/app_env.js'
-import type { Context } from 'hono'
 import { systemClock } from '../../app/core/support/clock.js'
 import { randomIdGenerator } from '../../app/core/support/ids.js'
 import { InMemoryIdempotencyStore } from '../helpers/in_memory_idempotency_store.js'
@@ -33,13 +33,14 @@ function buildApp(store: InMemoryIdempotencyStore, handler: Handler) {
   return app
 }
 
-function post(key: string | undefined, body: string = BODY, user: string | undefined = 'user-1'): RequestInit {
+/** `user: null` = requête sans identité (pas d'en-tête x-test-user). */
+function post(key: string | null, body: string = BODY, user: string | null = 'user-1'): RequestInit {
   return {
     method: 'POST',
     headers: {
       'content-type': 'application/json',
-      ...(key === undefined ? {} : { 'idempotency-key': key }),
-      ...(user === undefined ? {} : { 'x-test-user': user }),
+      ...(key === null ? {} : { 'idempotency-key': key }),
+      ...(user === null ? {} : { 'x-test-user': user }),
     },
     body,
   }
@@ -54,7 +55,7 @@ async function readJson(response: Response): Promise<Record<string, unknown>> {
 describe('middleware d\'idempotence', () => {
   it('exige l\'en-tête Idempotency-Key', async () => {
     const app = buildApp(new InMemoryIdempotencyStore(), (c) => c.json({ ok: true }, 201))
-    const response = await app.request('/pay', post(undefined))
+    const response = await app.request('/pay', post(null))
     expect(response.status).toBe(400)
     expect(await readJson(response)).toMatchObject({ code: 'idempotency_key_required' })
   })
@@ -68,7 +69,7 @@ describe('middleware d\'idempotence', () => {
 
   it('refuse une requête sans identité (401)', async () => {
     const app = buildApp(new InMemoryIdempotencyStore(), (c) => c.json({ ok: true }, 201))
-    const response = await app.request('/pay', post(KEY, BODY, undefined))
+    const response = await app.request('/pay', post(KEY, BODY, null))
     expect(response.status).toBe(401)
   })
 
