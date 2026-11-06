@@ -2,6 +2,16 @@ import type { PrismaClient } from '@prisma/client'
 import type { Redis } from 'ioredis'
 import type { Logger } from 'pino'
 import type { Config } from '../../../config/index.js'
+import type { AesGcmCipher } from '../crypto/aes_gcm.js'
+import type { BlindIndexer } from '../crypto/hmac.js'
+import type { UnitOfWork } from '../database/unit_of_work.js'
+import type { DeliveryRepository } from '../events/delivery_repository.js'
+import type { EventBus } from '../events/event_bus.js'
+import type { OutboxPublisher } from '../events/outbox_publisher.js'
+import type { OutboxRelay } from '../events/outbox_relay.js'
+import type { OutboxRepository } from '../events/outbox_repository.js'
+import type { IdempotencyStore } from '../idempotency/idempotency_store.js'
+import type { RateLimitBackend } from '../rate_limit/rate_limit_backend.js'
 import type { Clock } from './clock.js'
 import type { IdGenerator } from './ids.js'
 
@@ -16,6 +26,16 @@ export interface Registry {
   ids: IdGenerator
   prisma: PrismaClient
   redis: Redis
+  cipher: AesGcmCipher
+  blindIndexer: BlindIndexer
+  unitOfWork: UnitOfWork
+  eventBus: EventBus
+  outbox: OutboxRepository
+  deliveries: DeliveryRepository
+  outboxPublisher: OutboxPublisher
+  outboxRelay: OutboxRelay
+  idempotencyStore: IdempotencyStore
+  rateLimitBackend: RateLimitBackend
 }
 
 type Factory<T extends object> = (container: Container<T>) => unknown

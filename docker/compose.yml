@@ -4,6 +4,18 @@
 name: envo
 
 services:
+  # Migrations appliquées avant le démarrage de l'API et du worker.
+  migrate:
+    build:
+      context: ..
+      dockerfile: docker/Dockerfile
+      target: migrate
+    env_file: ../.env
+    restart: 'no'
+    depends_on:
+      postgres:
+        condition: service_healthy
+
   api:
     build:
       context: ..
@@ -11,12 +23,32 @@ services:
     env_file: ../.env
     restart: unless-stopped
     depends_on:
+      migrate:
+        condition: service_completed_successfully
       postgres:
         condition: service_healthy
       redis:
         condition: service_healthy
     expose:
       - '3000'
+
+  worker:
+    build:
+      context: ..
+      dockerfile: docker/Dockerfile
+    command: ['node', 'dist/bin/worker.js']
+    env_file: ../.env
+    restart: unless-stopped
+    depends_on:
+      migrate:
+        condition: service_completed_successfully
+      postgres:
+        condition: service_healthy
+      redis:
+        condition: service_healthy
+    # Le worker n'écoute aucun port : on désactive le HEALTHCHECK HTTP de l'image.
+    healthcheck:
+      disable: true
 
   postgres:
     image: postgres:17-alpine
@@ -67,5 +99,4 @@ volumes:
   caddy_data:
   caddy_config:
 
-# TODO(phase-1) : service `worker` (BullMQ).
 # TODO(phase-7) : sauvegarde continue de Postgres (WAL) et restauration testée.

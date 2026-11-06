@@ -5,5 +5,7 @@ export type AppEnv = {
   Variables: {
     requestId: string
     logger: Logger
+    /** Renseigné par le middleware d'idempotence sur les routes qui l'utilisent. */
+    idempotency: { key: string }
   }
 }
