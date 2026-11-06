@@ -7,7 +7,7 @@ ENV PATH="$PNPM_HOME:$PATH"
 RUN apk add --no-cache openssl && corepack enable
 WORKDIR /app
 
-# ── build : installation, génération du client Prisma, compilation, retrait des dépendances de dev ──
+# ── build : installation, génération du client Prisma, compilation ──
 FROM base AS build
 COPY package.json pnpm-lock.yaml* ./
 RUN if [ -f pnpm-lock.yaml ]; then pnpm install --frozen-lockfile; else pnpm install; fi
@@ -18,14 +18,22 @@ COPY bin ./bin
 COPY config ./config
 COPY start ./start
 COPY app ./app
-RUN pnpm build && pnpm prune --prod
+RUN pnpm build
+
+# ── migrate : applique les migrations Prisma (service "migrate" de Compose, avant api/worker) ──
+FROM build AS migrate
+CMD ["pnpm", "db:migrate:deploy"]
+
+# ── prod-deps : dépendances de production uniquement ──
+FROM build AS prod-deps
+RUN pnpm prune --prod
 
 # ── runtime : image minimale, utilisateur non root, aucun secret ──
 FROM node:24-alpine AS runtime
 RUN apk add --no-cache openssl
 ENV NODE_ENV=production
 WORKDIR /app
-COPY --from=build --chown=node:node /app/node_modules ./node_modules
+COPY --from=prod-deps --chown=node:node /app/node_modules ./node_modules
 COPY --from=build --chown=node:node /app/dist ./dist
 COPY --from=build --chown=node:node /app/package.json ./package.json
 USER node
