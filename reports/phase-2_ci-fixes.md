@@ -1,8 +1,8 @@
 # Rapport CI
 
 - branche : phase-2/ci-fixes
-- commit : 93897e96823d14bdb11a79819e4ae8bea0283012
-- run : https://github.com/Padevend/Envo-backend/actions/runs/42393654571
+- commit : fcbe848589e54245bc34cb4932ea2565cb3c981f
+- run : https://github.com/Padevend/Envo-backend/actions/runs/42419266587
 
 | étape | résultat |
 |---|---|
@@ -20,14 +20,13 @@
 ```
 Progress: resolved 1, reused 0, downloaded 0, added 0
  WARN  deprecated eslint@9.39.5: This version is no longer supported. Please see https://eslint.org/version-support for other options.
-Progress: resolved 19, reused 0, downloaded 17, added 0
-Progress: resolved 97, reused 0, downloaded 84, added 0
-Progress: resolved 233, reused 0, downloaded 185, added 0
-Progress: resolved 287, reused 0, downloaded 239, added 0
+Progress: resolved 20, reused 0, downloaded 18, added 0
+Progress: resolved 142, reused 0, downloaded 125, added 0
+Progress: resolved 256, reused 0, downloaded 213, added 0
+Progress: resolved 363, reused 0, downloaded 290, added 0
  WARN  2 deprecated subdependencies found: cron-parser@4.9.0, glob@10.5.0
 Packages: +314
 ++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
-Progress: resolved 369, reused 0, downloaded 313, added 0
 Progress: resolved 369, reused 0, downloaded 314, added 314, done
 .../node_modules/@prisma/engines postinstall$ node scripts/postinstall.js
 .../esbuild@0.28.2/node_modules/esbuild postinstall$ node install.js
@@ -69,7 +68,7 @@ devDependencies:
 The following dependencies have build scripts that were ignored: msgpackr-extract
 To allow the execution of build scripts for these packages, add their names to "pnpm.onlyBuiltDependencies" in your "package.json", then run "pnpm rebuild"
 
-Done in 9.7s
+Done in 8.6s
 ```
 
 ## generate
@@ -80,11 +79,11 @@ Done in 9.7s
 
 Prisma schema loaded from prisma/schema
 
-✔ Generated Prisma Client (v6.19.3) to ./node_modules/.pnpm/@prisma+client@6.19.3_prisma@6.19.3_magicast@0.3.5_typescript@5.9.3__typescript@5.9.3/node_modules/@prisma/client in 118ms
+✔ Generated Prisma Client (v6.19.3) to ./node_modules/.pnpm/@prisma+client@6.19.3_prisma@6.19.3_magicast@0.3.5_typescript@5.9.3__typescript@5.9.3/node_modules/@prisma/client in 124ms
 
 Start by importing your Prisma Client (See: https://pris.ly/d/importing-client)
 
-Tip: Interested in query caching in just a few lines of code? Try Accelerate today! https://pris.ly/tip-3-accelerate
+Tip: Want to turn off tips and other hints? https://pris.ly/tip-4-nohints
 
 ```
 
@@ -159,35 +158,35 @@ All migrations have been successfully applied.
 
 [1m[46m RUN [49m[22m [36mv3.2.7 [39m[90m/home/runner/work/Envo-backend/Envo-backend[39m
 
- [32m✓[39m tests/unit/idempotency_middleware.test.ts [2m([22m[2m9 tests[22m[2m)[22m[32m 57[2mms[22m[39m
- [32m✓[39m tests/integration/postgres.test.ts [2m([22m[2m11 tests[22m[2m)[22m[32m 298[2mms[22m[39m
- [32m✓[39m tests/unit/fee_calculator.test.ts [2m([22m[2m11 tests[22m[2m)[22m[32m 28[2mms[22m[39m
- [32m✓[39m tests/unit/entry_rules.test.ts [2m([22m[2m10 tests[22m[2m)[22m[32m 23[2mms[22m[39m
- [32m✓[39m tests/unit/outbox_relay.test.ts [2m([22m[2m6 tests[22m[2m)[22m[32m 16[2mms[22m[39m
- [32m✓[39m tests/unit/crypto.test.ts [2m([22m[2m16 tests[22m[2m)[22m[32m 21[2mms[22m[39m
- [32m✓[39m tests/e2e/health.test.ts [2m([22m[2m12 tests[22m[2m)[22m[32m 218[2mms[22m[39m
- [32m✓[39m tests/unit/fee_schedule.test.ts [2m([22m[2m10 tests[22m[2m)[22m[32m 11[2mms[22m[39m
- [32m✓[39m tests/unit/rate_limit_middleware.test.ts [2m([22m[2m6 tests[22m[2m)[22m[32m 35[2mms[22m[39m
- [32m✓[39m tests/unit/env.test.ts [2m([22m[2m12 tests[22m[2m)[22m[32m 21[2mms[22m[39m
+ [32m✓[39m tests/unit/idempotency_middleware.test.ts [2m([22m[2m9 tests[22m[2m)[22m[32m 52[2mms[22m[39m
+ [32m✓[39m tests/integration/postgres.test.ts [2m([22m[2m11 tests[22m[2m)[22m[32m 261[2mms[22m[39m
+ [32m✓[39m tests/unit/fee_calculator.test.ts [2m([22m[2m11 tests[22m[2m)[22m[32m 19[2mms[22m[39m
+ [32m✓[39m tests/unit/entry_rules.test.ts [2m([22m[2m10 tests[22m[2m)[22m[32m 19[2mms[22m[39m
+ [32m✓[39m tests/unit/outbox_relay.test.ts [2m([22m[2m6 tests[22m[2m)[22m[32m 11[2mms[22m[39m
+ [32m✓[39m tests/unit/crypto.test.ts [2m([22m[2m16 tests[22m[2m)[22m[32m 13[2mms[22m[39m
+ [32m✓[39m tests/e2e/health.test.ts [2m([22m[2m12 tests[22m[2m)[22m[32m 183[2mms[22m[39m
+ [32m✓[39m tests/unit/fee_schedule.test.ts [2m([22m[2m10 tests[22m[2m)[22m[32m 12[2mms[22m[39m
+ [32m✓[39m tests/unit/rate_limit_middleware.test.ts [2m([22m[2m6 tests[22m[2m)[22m[32m 26[2mms[22m[39m
+ [32m✓[39m tests/unit/env.test.ts [2m([22m[2m12 tests[22m[2m)[22m[32m 14[2mms[22m[39m
+ [32m✓[39m tests/integration/ledger.test.ts [2m([22m[2m21 tests[22m[2m)[22m[33m 1299[2mms[22m[39m
+   [33m[2m✓[22m[39m intégration ledger (PostgreSQL)[2m > [22minvariants et propriétés[2m > [22mpropriétés : modèle exact, conservation du total, aucun solde négatif [33m 706[2mms[22m[39m
  [32m✓[39m tests/architecture.test.ts [2m([22m[2m11 tests[22m[2m)[22m[32m 11[2mms[22m[39m
- [32m✓[39m tests/integration/ledger.test.ts [2m([22m[2m21 tests[22m[2m)[22m[33m 1805[2mms[22m[39m
-   [33m[2m✓[22m[39m intégration ledger (PostgreSQL)[2m > [22minvariants et propriétés[2m > [22mpropriétés : modèle exact, conservation du total, aucun solde négatif [33m 1065[2mms[22m[39m
- [32m✓[39m tests/unit/money.test.ts [2m([22m[2m24 tests[22m[2m)[22m[32m 11[2mms[22m[39m
- [32m✓[39m tests/unit/unit_of_work.test.ts [2m([22m[2m7 tests[22m[2m)[22m[32m 9[2mms[22m[39m
- [32m✓[39m tests/unit/money_property.test.ts [2m([22m[2m3 tests[22m[2m)[22m[32m 28[2mms[22m[39m
+ [32m✓[39m tests/unit/money.test.ts [2m([22m[2m24 tests[22m[2m)[22m[32m 13[2mms[22m[39m
+ [32m✓[39m tests/unit/unit_of_work.test.ts [2m([22m[2m7 tests[22m[2m)[22m[32m 8[2mms[22m[39m
+ [32m✓[39m tests/unit/money_property.test.ts [2m([22m[2m3 tests[22m[2m)[22m[32m 31[2mms[22m[39m
  [32m✓[39m tests/unit/retry.test.ts [2m([22m[2m5 tests[22m[2m)[22m[32m 5[2mms[22m[39m
- [32m✓[39m tests/unit/container.test.ts [2m([22m[2m5 tests[22m[2m)[22m[32m 4[2mms[22m[39m
- [32m✓[39m tests/unit/problem.test.ts [2m([22m[2m4 tests[22m[2m)[22m[32m 4[2mms[22m[39m
- [32m✓[39m tests/integration/redis.test.ts [2m([22m[2m3 tests[22m[2m)[22m[33m 660[2mms[22m[39m
-   [33m[2m✓[22m[39m intégration Redis[2m > [22mRedisRateLimitBackend (script Lua)[2m > [22mrefuse au-delà de la limite, puis libère une place quand la fenêtre glisse [33m 517[2mms[22m[39m
- [32m✓[39m tests/unit/logger.test.ts [2m([22m[2m2 tests[22m[2m)[22m[32m 13[2mms[22m[39m
- [32m✓[39m tests/unit/queue_connection.test.ts [2m([22m[2m3 tests[22m[2m)[22m[32m 4[2mms[22m[39m
- [32m✓[39m tests/e2e/rate_limit.test.ts [2m([22m[2m1 test[22m[2m)[22m[32m 41[2mms[22m[39m
+ [32m✓[39m tests/unit/container.test.ts [2m([22m[2m5 tests[22m[2m)[22m[32m 5[2mms[22m[39m
+ [32m✓[39m tests/unit/problem.test.ts [2m([22m[2m4 tests[22m[2m)[22m[32m 3[2mms[22m[39m
+ [32m✓[39m tests/unit/logger.test.ts [2m([22m[2m2 tests[22m[2m)[22m[32m 6[2mms[22m[39m
+ [32m✓[39m tests/unit/queue_connection.test.ts [2m([22m[2m3 tests[22m[2m)[22m[32m 3[2mms[22m[39m
+ [32m✓[39m tests/integration/redis.test.ts [2m([22m[2m3 tests[22m[2m)[22m[33m 661[2mms[22m[39m
+   [33m[2m✓[22m[39m intégration Redis[2m > [22mRedisRateLimitBackend (script Lua)[2m > [22mrefuse au-delà de la limite, puis libère une place quand la fenêtre glisse [33m 516[2mms[22m[39m
+ [32m✓[39m tests/e2e/rate_limit.test.ts [2m([22m[2m1 test[22m[2m)[22m[32m 48[2mms[22m[39m
 
 [2m Test Files [22m [1m[32m22 passed[39m[22m[90m (22)[39m
 [2m      Tests [22m [1m[32m192 passed[39m[22m[90m (192)[39m
-[2m   Start at [22m 16:55:34
-[2m   Duration [22m 3.51s[2m (transform 723ms, setup 0ms, collect 2.48s, tests 3.32s, environment 4ms, prepare 1.32s)[22m
+[2m   Start at [22m 22:10:06
+[2m   Duration [22m 2.82s[2m (transform 647ms, setup 0ms, collect 2.13s, tests 2.70s, environment 3ms, prepare 1.06s)[22m
 
 ```
 
