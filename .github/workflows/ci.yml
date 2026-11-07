@@ -6,8 +6,9 @@ on:
     branches: [main, 'phase-*/**']
   pull_request:
 
+# contents: write sert uniquement à publier le rapport d'erreurs sur la branche `ci-report`.
 permissions:
-  contents: read
+  contents: write
   pull-requests: read
 
 concurrency:
@@ -19,7 +20,7 @@ jobs:
     runs-on: ubuntu-latest
     timeout-minutes: 15
 
-    # Postgres et Redis réels : tests d'intégration (stores Prisma, outbox, Lua du rate limit, BullMQ).
+    # Postgres et Redis réels : tests d'intégration (stores Prisma, outbox, ledger, Lua du rate limit, BullMQ).
     services:
       postgres:
         image: postgres:17-alpine
@@ -64,34 +65,133 @@ jobs:
           # Le cache pnpm exige un pnpm-lock.yaml ; tant qu'il n'est pas commité, pas de cache.
           cache: ${{ hashFiles('pnpm-lock.yaml') != '' && 'pnpm' || '' }}
 
+      - name: Préparer les journaux
+        run: mkdir -p ci-logs
+
+      # Chaque vérification s'exécute même si la précédente a échoué (continue-on-error), son journal est
+      # conservé, et le job échoue à la fin si l'une d'elles a échoué : on voit toutes les erreurs d'un coup.
       - name: Installation
-        run: pnpm install ${{ hashFiles('pnpm-lock.yaml') != '' && '--frozen-lockfile' || '--no-frozen-lockfile' }}
+        id: install
+        continue-on-error: true
+        shell: bash
+        run: pnpm install ${{ hashFiles('pnpm-lock.yaml') != '' && '--frozen-lockfile' || '--no-frozen-lockfile' }} 2>&1 | tee ci-logs/install.log
 
       - name: Client Prisma
-        run: pnpm prisma:generate
+        id: generate
+        continue-on-error: true
+        shell: bash
+        run: pnpm prisma:generate 2>&1 | tee ci-logs/generate.log
 
       - name: Migrations (valide aussi le SQL écrit à la main)
-        run: pnpm db:migrate:deploy
+        id: migrate
+        continue-on-error: true
+        shell: bash
+        run: pnpm db:migrate:deploy 2>&1 | tee ci-logs/migrate.log
 
       - name: Lint
-        run: pnpm lint
+        id: lint
+        continue-on-error: true
+        shell: bash
+        run: pnpm lint 2>&1 | tee ci-logs/lint.log
 
       - name: Typecheck
-        run: pnpm typecheck
+        id: typecheck
+        continue-on-error: true
+        shell: bash
+        run: pnpm typecheck 2>&1 | tee ci-logs/typecheck.log
 
       - name: Frontières de modules (dependency-cruiser)
-        run: pnpm arch
+        id: arch
+        continue-on-error: true
+        shell: bash
+        run: pnpm arch 2>&1 | tee ci-logs/arch.log
 
       - name: Tests (unitaires, architecture, intégration)
-        run: pnpm test
+        id: test
+        continue-on-error: true
+        shell: bash
+        run: pnpm test 2>&1 | tee ci-logs/test.log
 
       - name: Audit des dépendances
-        run: pnpm audit:deps
+        id: audit
+        continue-on-error: true
+        shell: bash
+        run: pnpm audit:deps 2>&1 | tee ci-logs/audit.log
 
       - name: Build
-        run: pnpm build
+        id: build
+        continue-on-error: true
+        shell: bash
+        run: pnpm build 2>&1 | tee ci-logs/build.log
 
       - name: Scan de secrets (gitleaks)
         uses: gitleaks/gitleaks-action@v2
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+
+      - name: Composer le rapport
+        if: always()
+        shell: bash
+        run: |
+          {
+            echo "# Rapport CI"
+            echo
+            echo "- branche : ${GITHUB_REF_NAME}"
+            echo "- commit : ${GITHUB_SHA}"
+            echo "- run : ${GITHUB_SERVER_URL}/${GITHUB_REPOSITORY}/actions/runs/${GITHUB_RUN_ID}"
+            echo
+            echo "| étape | résultat |"
+            echo "|---|---|"
+            echo "| installation | ${{ steps.install.outcome }} |"
+            echo "| prisma generate | ${{ steps.generate.outcome }} |"
+            echo "| migrations | ${{ steps.migrate.outcome }} |"
+            echo "| lint | ${{ steps.lint.outcome }} |"
+            echo "| typecheck | ${{ steps.typecheck.outcome }} |"
+            echo "| arch | ${{ steps.arch.outcome }} |"
+            echo "| tests | ${{ steps.test.outcome }} |"
+            echo "| audit | ${{ steps.audit.outcome }} |"
+            echo "| build | ${{ steps.build.outcome }} |"
+            for step in install generate migrate lint typecheck arch test audit build; do
+              if [ -f "ci-logs/${step}.log" ]; then
+                echo
+                echo "## ${step}"
+                echo '```'
+                tail -n 100 "ci-logs/${step}.log"
+                echo '```'
+              fi
+            done
+          } > ci-report.md
+
+      # Le rapport est publié sur la branche `ci-report` (jamais lancée par ce workflow : pas de boucle).
+      - name: Récupérer la branche de rapport
+        if: always()
+        uses: actions/checkout@v4
+        with:
+          ref: ci-report
+          path: ci-report-branch
+          fetch-depth: 1
+
+      - name: Publier le rapport
+        if: always()
+        shell: bash
+        run: |
+          name="${GITHUB_REF_NAME//\//_}"
+          mkdir -p ci-report-branch/reports
+          cp ci-report.md "ci-report-branch/reports/${name}.md"
+          cd ci-report-branch
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add reports
+          git commit -m "ci: rapport ${GITHUB_SHA::7} (${GITHUB_REF_NAME})" || exit 0
+          git pull --rebase origin ci-report || true
+          git push origin ci-report
+
+      - name: Échouer si une vérification a échoué
+        if: always()
+        shell: bash
+        env:
+          OUTCOMES: ${{ steps.install.outcome }} ${{ steps.generate.outcome }} ${{ steps.migrate.outcome }} ${{ steps.lint.outcome }} ${{ steps.typecheck.outcome }} ${{ steps.arch.outcome }} ${{ steps.test.outcome }} ${{ steps.audit.outcome }} ${{ steps.build.outcome }}
+        run: |
+          case " ${OUTCOMES} " in
+            *failure*) echo "Au moins une vérification a échoué : ${OUTCOMES}"; exit 1 ;;
+          esac
