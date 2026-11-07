@@ -21,7 +21,7 @@ export class AccountService {
 
   constructor(private readonly deps: AccountServiceDeps) {}
 
-  openAccount(input: OpenAccountInput, options: LedgerOptions = {}): Promise<LedgerAccount> {
+  async openAccount(input: OpenAccountInput, options: LedgerOptions = {}): Promise<LedgerAccount> {
     if (!USER_ACCOUNT_KINDS.includes(input.kind) || !UUID_PATTERN.test(input.ownerUserId)) {
       throw ledgerErrors.invalidEntry('Type de compte ou propriétaire invalide.')
     }
