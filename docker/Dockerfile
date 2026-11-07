@@ -36,6 +36,8 @@ WORKDIR /app
 COPY --from=prod-deps --chown=node:node /app/node_modules ./node_modules
 COPY --from=build --chown=node:node /app/dist ./dist
 COPY --from=build --chown=node:node /app/package.json ./package.json
+# Barème de frais par défaut ; Compose le remplace par le fichier du dépôt (modifiable sans rebuild).
+COPY --from=build --chown=node:node /app/config/fees.json ./config/fees.json
 USER node
 EXPOSE 3000
 HEALTHCHECK --interval=15s --timeout=3s --start-period=20s --retries=3 \

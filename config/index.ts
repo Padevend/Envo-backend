@@ -2,6 +2,7 @@ import type { z } from 'zod'
 import { appConfig, appEnvSchema } from './app.js'
 import { corsConfig, corsEnvSchema } from './cors.js'
 import { databaseConfig, databaseEnvSchema } from './database.js'
+import { feesConfig, feesEnvSchema } from './fees.js'
 import { limitsConfig, limitsEnvSchema } from './limits.js'
 import { loggerConfig, loggerEnvSchema } from './logger.js'
 import { queueConfig, queueEnvSchema } from './queue.js'
@@ -17,6 +18,7 @@ export const envSchema = appEnvSchema
   .extend(limitsEnvSchema.shape)
   .extend(securityEnvSchema.shape)
   .extend(queueEnvSchema.shape)
+  .extend(feesEnvSchema.shape)
   .superRefine((env, ctx) => {
     if (!env.ENCRYPTION_KEYS.has(env.ENCRYPTION_ACTIVE_KEY_VERSION)) {
       ctx.addIssue({
@@ -39,6 +41,7 @@ export function buildConfig(env: Env) {
     limits: limitsConfig(env),
     security: securityConfig(env),
     queue: queueConfig(env),
+    fees: feesConfig(env),
   } as const
 }
 

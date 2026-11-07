@@ -1,0 +1,82 @@
+// Module `ledger` : comptes, écritures (partie double), lignes. Seul `ledger` écrit dans `journal_entries` et `postings`.
+// Les garde-fous (immuabilité, somme nulle, solde non négatif, cache des soldes) sont aussi des triggers SQL :
+// voir prisma/migrations/20261106100000_ledger/migration.sql (Prisma ne les modélise pas).
+// Convention de signe : montant > 0 crédite le compte (son solde augmente), montant < 0 le débite.
+
+enum LedgerAccountKind {
+  USER_WALLET
+  USER_ENVELOPE
+  USER_GOAL
+  SYSTEM_EXTERNAL
+  SYSTEM_TRANSIT
+  SYSTEM_FEES_MESOMB
+  SYSTEM_FEES_APP
+  SYSTEM_SUSPENSE
+}
+
+enum LedgerAccountStatus {
+  ACTIVE
+  FROZEN // refuse les débits (objectif verrouillé, gel administratif)
+  CLOSED
+}
+
+enum JournalEntryKind {
+  TOPUP
+  PAYOUT_RESERVE
+  PAYOUT_SETTLE
+  TRANSFER
+  RULE_ALLOCATION
+  REVERSAL
+  ADJUSTMENT
+}
+
+model LedgerAccount {
+  id             String              @id @default(uuid()) @db.Uuid
+  kind           LedgerAccountKind
+  code           String?             @unique // comptes système : EXTERNAL, TRANSIT, FEES_MESOMB, FEES_APP, SUSPENSE
+  ownerUserId    String?             @map("owner_user_id") @db.Uuid // pas de clé étrangère : le ledger ne dépend pas de `users`
+  status         LedgerAccountStatus @default(ACTIVE)
+  allowsNegative Boolean             @default(false) @map("allows_negative")
+  balance        BigInt              @default(0) // cache, modifié uniquement par trigger à l'insertion d'une ligne
+  createdAt      DateTime            @default(now()) @map("created_at")
+  postings       Posting[]
+
+  @@index([ownerUserId])
+  @@map("ledger_accounts")
+}
+
+model JournalEntry {
+  id              String           @id @default(uuid()) @db.Uuid
+  kind            JournalEntryKind
+  idempotencyKey  String           @unique @map("idempotency_key")
+  externalRef     String?          @map("external_ref") // référence MeSomb, quand il y en a une
+  reversesEntryId String?          @unique @map("reverses_entry_id") @db.Uuid // une écriture n'est contre-passée qu'une fois
+  description     String?
+  metadata        Json?
+  occurredAt      DateTime         @map("occurred_at")
+  createdAt       DateTime         @default(now()) @map("created_at")
+  reverses        JournalEntry?    @relation("EntryReversal", fields: [reversesEntryId], references: [id])
+  reversedBy      JournalEntry?    @relation("EntryReversal")
+  postings        Posting[]
+
+  @@index([externalRef])
+  @@map("journal_entries")
+}
+
+model Posting {
+  id           String        @id @default(uuid()) @db.Uuid
+  seq          BigInt        @default(autoincrement()) // ordre d'insertion global : curseur de l'historique
+  entryId      String        @map("entry_id") @db.Uuid
+  accountId    String        @map("account_id") @db.Uuid
+  lineNo       Int           @map("line_no")
+  amount       BigInt // signé, jamais 0
+  balanceAfter BigInt        @default(0) @map("balance_after") // renseigné par trigger
+  createdAt    DateTime      @default(now()) @map("created_at")
+  entry        JournalEntry  @relation(fields: [entryId], references: [id])
+  account      LedgerAccount @relation(fields: [accountId], references: [id])
+
+  @@unique([entryId, lineNo])
+  @@unique([entryId, accountId])
+  @@index([accountId, seq])
+  @@map("postings")
+}
