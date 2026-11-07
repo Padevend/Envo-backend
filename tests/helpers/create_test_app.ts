@@ -34,7 +34,7 @@ export async function createTestApp(
 ): Promise<{ app: Hono<AppEnv>; container: Container }> {
   const container = createContainer(testEnv(envOverrides))
   container.bindValue('healthProbes', probes)
-  container.bindValue('rateLimitBackend', options.rateLimitBackend ?? unlimitedBackend)
+  container.replaceValue('rateLimitBackend', options.rateLimitBackend ?? unlimitedBackend)
   const app = await createApp(container)
   return { app, container }
 }

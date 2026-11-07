@@ -57,6 +57,12 @@ export class Container<T extends object = Registry> {
     this.bind(key, () => value)
   }
 
+  /** Remplace une liaison existante par une valeur (tests : simulateurs). L'instance déjà créée est oubliée. */
+  replaceValue<K extends keyof T>(key: K, value: T[K]): void {
+    this.#factories.set(key, () => value)
+    this.#instances.delete(key)
+  }
+
   has(key: keyof T): boolean {
     return this.#factories.has(key)
   }
