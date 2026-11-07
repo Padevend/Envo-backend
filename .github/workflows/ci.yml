@@ -2,7 +2,8 @@ name: ci
 
 on:
   push:
-    branches: [main]
+    # Les branches de phase sont vérifiées dès le push, sans attendre l'ouverture de la PR.
+    branches: [main, 'phase-*/**']
   pull_request:
 
 permissions:

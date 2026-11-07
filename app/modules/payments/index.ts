@@ -1,2 +1,2 @@
-// API publique du module `payments` (seul fichier importable depuis l'extérieur). Phase 4.
-export {}
+export type { FeeCalculatorApi, FeeOperation, FeeQuote, FeeQuoteInput } from './contracts.js'
+export { FEE_OPERATIONS } from './contracts.js'

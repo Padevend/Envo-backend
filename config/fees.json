@@ -1,0 +1,56 @@
+{
+  "version": 1,
+  "currency": "XAF",
+  "comment": "Barèmes de frais, éditables sans toucher au code (redémarrer l'API et le worker après modification). Voir docs/fees.md. Aucun barème MeSomb n'est renseigné tant qu'il n'est pas vérifié : une opération dont la règle est absente ou enabled=false est refusée.",
+  "appFee": {
+    "bps": 50,
+    "min": "0",
+    "max": null,
+    "rounding": "HALF_UP",
+    "appliesTo": ["COLLECT", "PAYOUT"]
+  },
+  "mesomb": {
+    "CM": {
+      "MTN_MOMO": {
+        "COLLECT": {
+          "enabled": false,
+          "verified": false,
+          "note": "À renseigner d'après la documentation officielle MeSomb, puis passer enabled et verified à true.",
+          "tiers": [{ "upTo": null, "fixed": "0", "bps": 0 }],
+          "min": "0",
+          "max": null,
+          "rounding": "CEIL"
+        },
+        "PAYOUT": {
+          "enabled": false,
+          "verified": false,
+          "note": "À renseigner d'après la documentation officielle MeSomb, puis passer enabled et verified à true.",
+          "tiers": [{ "upTo": null, "fixed": "0", "bps": 0 }],
+          "min": "0",
+          "max": null,
+          "rounding": "CEIL"
+        }
+      },
+      "ORANGE_MONEY": {
+        "COLLECT": {
+          "enabled": false,
+          "verified": false,
+          "note": "À renseigner d'après la documentation officielle MeSomb, puis passer enabled et verified à true.",
+          "tiers": [{ "upTo": null, "fixed": "0", "bps": 0 }],
+          "min": "0",
+          "max": null,
+          "rounding": "CEIL"
+        },
+        "PAYOUT": {
+          "enabled": false,
+          "verified": false,
+          "note": "À renseigner d'après la documentation officielle MeSomb, puis passer enabled et verified à true.",
+          "tiers": [{ "upTo": null, "fixed": "0", "bps": 0 }],
+          "min": "0",
+          "max": null,
+          "rounding": "CEIL"
+        }
+      }
+    }
+  }
+}
